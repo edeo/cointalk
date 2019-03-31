@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554063667621.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "715475773",
+    "id" : "18EF05F4",
+    "lastKnownWriteTime" : 1554063714,
+    "last_content_update" : 1554063714560,
+    "path" : "~/projects/podcast_textmining/index.Rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "4,37",
+        "scrollLine" : "0",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
