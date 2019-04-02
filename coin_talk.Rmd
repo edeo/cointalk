@@ -1,69 +1,47 @@
-Coin talk
----------
+---
+title: "cointalk"
+author: "ed"
+date: "4/1/2019"
+output:
+  md_document:
+    variant: markdown_github
+---
+
+
+## Coin talk
 
 Here is a analysis of sentiment in Cointalk.
 
-``` r
+```{r , results='hide'}
+
 library(rvest)
-```
-
-    ## Loading required package: xml2
-
-``` r
 library(here)
-```
-
-    ## here() starts at /home/ed/projects/cointalk
-
-``` r
 library(readr)
-```
-
-    ## 
-    ## Attaching package: 'readr'
-
-    ## The following object is masked from 'package:rvest':
-    ## 
-    ##     guess_encoding
-
-``` r
 library(stringr)
 library(tidyverse)
-```
-
-    ## ── Attaching packages ──────────────────────────────────── tidyverse 1.2.1 ──
-
-    ## ✔ ggplot2 3.1.0       ✔ purrr   0.3.1  
-    ## ✔ tibble  2.0.1       ✔ dplyr   0.8.0.1
-    ## ✔ tidyr   0.8.3       ✔ forcats 0.4.0
-
-    ## ── Conflicts ─────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter()         masks stats::filter()
-    ## ✖ readr::guess_encoding() masks rvest::guess_encoding()
-    ## ✖ dplyr::lag()            masks stats::lag()
-    ## ✖ purrr::pluck()          masks rvest::pluck()
-
-``` r
 library(tidytext)
 
 first <- function(x){
   z = str_split(x, ":") %>% unlist(.)
   y= unlist(z[[1]])
-  print(y[1])
   return(y[1])}
 
 
 second <- function(x){
   z = ifelse(str_detect(x,'Jay Kang:'),str_replace(x,'Jay Kang:', ""),x )
   y = ifelse(str_detect(z,'Aaron Lammer:'),str_replace(z,'Aaron Lammer:', ""),z )
-  print(y)
-  #y= unlist(z[[2]])
-  #print(y)
   return(y)
 }
 
+```
 
-"https://medium.com/s/cointalk/coin-talk-25-fear-and-loathing-at-a-cryptokitty-auction-33abbcd65b57"
+
+Here is a list of all the cointalk episode webpages that had transcriptions.
+
+```{r, results='hide'}
+
+
+# "https://medium.com/s/cointalk/coin-talk-25-fear-and-loathing-at-a-cryptokitty-auction-33abbcd65b57"
 
 
 hand_list<- c("https://medium.com/s/cointalk/coin-talk-2-korean-crypto-mania-and-the-kimchi-spread-8ab23de3e1d9",
@@ -77,12 +55,14 @@ hand_list<- c("https://medium.com/s/cointalk/coin-talk-2-korean-crypto-mania-and
               "https://medium.com/s/cointalk/coin-talk-10-telegrams-ton-token-civil-brings-the-blockchain-to-journalism-w-maria-bustillos-913435b278c1",
               "https://medium.com/s/cointalk/coin-talk-12-what-is-an-ico-c94fa9c4226",
               "https://medium.com/s/cointalk/coin-talk-13-did-mt-goxs-japanese-trustee-personally-crash-bitcoin-62f62b65aefb",
-              "https://medium.com/s/cointalk/coin-talk-15-whats-so-great-about-the-blockchain-e89c5c5f69b1","https://medium.com/s/cointalk/coin-talk-11-when-dictators-ico-a02bc72da6e1",
+              "https://medium.com/s/cointalk/coin-talk-15-whats-so-great-about-the-blockchain-e89c5c5f69b1",
+              "https://medium.com/s/cointalk/coin-talk-11-when-dictators-ico-a02bc72da6e1",
               "https://medium.com/s/cointalk/coin-talk-14-whats-so-great-about-the-blockchain-dedc38e9413b",
               "https://medium.com/s/cointalk/coin-talk-16-the-rise-and-fall-of-kang-lammer-americas-worst-crypto-traders-8f32bcb08273",
               "https://medium.com/s/cointalk/coin-talk-18-the-fundamentals-remain-strong-9a8226e2b802",
               "https://medium.com/s/cointalk/coin-talk-19-alt-spring-on-the-campus-quad-1deada76e091",
-              "https://medium.com/s/cointalk/coin-talk-20-the-return-of-fomo-kang-w-doug-kim-d3a22a4a3d94","https://medium.com/s/cointalk/coin-talk-21-will-zrx-be-the-next-coin-added-to-coinbase-cedf82567a7c",
+              "https://medium.com/s/cointalk/coin-talk-20-the-return-of-fomo-kang-w-doug-kim-d3a22a4a3d94",
+              "https://medium.com/s/cointalk/coin-talk-21-will-zrx-be-the-next-coin-added-to-coinbase-cedf82567a7c",
               "https://medium.com/s/cointalk/coin-talk-22-%EF%B8%8F-the-bitcoin-ransoming-of-aaronlammer-com-be3072fd2668",
               "https://medium.com/s/cointalk/coin-talk-23-are-ripple-xrp-fans-bots-59c9aa0e192b",
               "https://medium.com/s/cointalk/24-book-club-the-bitcoin-standard-part-1-a0b9ef7981eb",
@@ -129,55 +109,75 @@ hand_list<- c("https://medium.com/s/cointalk/coin-talk-2-korean-crypto-mania-and
               "https://medium.com/s/cointalk/episode-67-would-oprah-move-the-needle-5b20d9a7910d",
               "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-68-%EF%B8%8F-hacking-team-wants-to-connect-on-linked-in-90220f283a57"
               )
+
 ```
 
-``` r
+
+```{r, results='hide'}
+
+# reading in the first webpage
+
 testtesttest <- read_html(hand_list[[1]])
 
+# pulling only the parts that are attributed to Jay or Aaron
 
 testtibble<- testtesttest %>% 
   html_nodes('p') %>% 
   html_text() %>% 
   as_tibble() %>% 
   filter(str_detect(value,"Jay Kang:")==TRUE |str_detect(value,"Aaron Lammer:")==TRUE) 
-```
 
-    ## Warning: Calling `as_tibble()` on a vector is discouraged, because the behavior is likely to change in the future. Use `enframe(name = NULL)` instead.
-    ## This warning is displayed once per session.
+# getting the episode number from the webpage
 
-``` r
 episode <- testtesttest %>% html_nodes('h1') %>% html_text()
 
-text <- testtibble$value
+# pulling all of the text attributed to Jay and Aaron
 
+text <- testtibble$value
 new_text <- unlist(text)
+
+# Each block of text starts with the name of the speaker and then ":" and then what they said.
+# The next block splits the text into two lists, one is the name of the speaker and the other is what he said.
+
 
 test1<- map(new_text,first)
 test2<- map(new_text,second)
 
+
+# this takes the two lists and makes them into a dataframe
 conversation_df <- tibble(name = unlist(test1),text = test2)
 
+#adding the row number and the episode number to each row
 conversation_df <-  conversation_df %>% mutate(linenumber=row_number(),episode=episode)
+
+# now createing a tibble containing one row for each word.
 
 tidy_conversation <- conversation_df %>% 
   unnest_tokens(word, text) 
 
+
+# removing stop words
+
 tidy_conversation <- tidy_conversation %>% 
   anti_join(stop_words)
-```
 
-    ## Joining, by = "word"
+# renaming the tibble 'tidy_conversation_main' which will be where all the tibbles are appended to 
 
-``` r
 tidy_conversation_main <- tidy_conversation
+
 ```
 
-``` r
-hand_listnum <- c(2:64)
 
-# episode 24 transcript is not formated correctly
+```{r, results='hide'}
 
-#hand_listnum <-  hand_listnum[-23]
+# creating a number list for each link in the list of podcast links.
+
+hand_listnum <- c(2:length(hand_list))
+
+# episode 24 transcript is not formated correctly so I took it out. 
+
+
+# a for loop that goes through each link, pulls the html, and does the same parsing and wrangling that was done to the first webpage.
 
 for(number in hand_listnum){
   print(number)
@@ -213,91 +213,43 @@ for(number in hand_listnum){
   tidy_conversation_main <- rbind(tidy_conversation_main,tidy_conversation)
   
 }
+
 ```
 
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
-    ## Joining, by = "word"
+Now we have a table with  "name","linenumber","episode","word" 
 
-``` r
+```{r}
+head(tidy_conversation_main)
+
+```
+
+```{r,results='hide'}
+
+# bringing in all of the bing sentiment words
 bing <- get_sentiments('bing')
 
+# joining the sentiment word table to the coin talk table
 
 convo_w_bing <- tidy_conversation_main %>%
   # With inner join, implement sentiment analysis using `bing`
   inner_join(bing)
-```
 
-    ## Joining, by = "word"
+# taking out the word 'grin' since it referes to a coin and not the actually grining, which is positive
 
-``` r
 convo_w_bing <- convo_w_bing %>% filter(word != 'grin')
 
+
+# coding negative as a zero and positive sentiment as a one.
+
 convo_w_bing <- convo_w_bing %>% mutate(score = ifelse(sentiment == 'negative',0,1))
+
+
+# a couple of the episodes either just said the speakers first name instead of their full name. 
 
 convo_w_bing <- convo_w_bing %>% mutate(name = ifelse(name=="Aaron Lammer","Aaron",
                                       ifelse(name== "Jay Kang","Jay",name)))
 
+# here, I am extracting the episode
 
 convo_w_bing <- convo_w_bing %>%
 mutate(episode_number = ifelse(is.na(str_extract(episode,'[:digit:]{2}')),str_extract(episode,'[:digit:]'),str_extract(episode,'[:digit:]{2}'))%>% as.numeric())
@@ -305,28 +257,31 @@ mutate(episode_number = ifelse(is.na(str_extract(episode,'[:digit:]{2}')),str_ex
                         
 summary_of_episode <- left_join(convo_w_bing %>%  group_by(name,episode) %>%
                                   summarize(total=sum(score)),convo_w_bing %>%
-                                  group_by(name,episode) %>% tally()) %>%
-  mutate(sent_score = total/n)
-```
+                                  group_by(name,episode) %>% 
+                                  tally()) %>%
+                                  mutate(sent_score = total/n)
 
-    ## Joining, by = c("name", "episode")
 
-``` r
-summary_of_episode <- summary_of_episode %>% mutate(episode_number = ifelse(is.na(str_extract(episode,'[:digit:]{2}')),str_extract(episode,'[:digit:]'),str_extract(episode,'[:digit:]{2}')))
+summary_of_episode <- summary_of_episode %>% 
+                      mutate(episode_number = ifelse(is.na(str_extract(episode,'[:digit:]{2}')),str_extract(episode,'[:digit:]'),str_extract(episode,'[:digit:]{2}')))
 
 
 summary_of_episode$episode_number <- as.numeric(summary_of_episode$episode_number)
+
+
+
 ```
 
-Including Plots
----------------
+## Including Plots
 
 You can also embed plots, for example:
 
-    ## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+```{r pressure, echo=FALSE}
 
-    ## Warning: Removed 2 rows containing missing values (geom_point).
+ggplot(summary_of_episode,aes(episode_number,sent_score,color=name)) +
+  geom_point() +
+  geom_smooth(method='lm')
 
-![](coin_talk_files/figure-markdown_github/pressure-1.png)
+```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
