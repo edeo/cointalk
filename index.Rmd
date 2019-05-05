@@ -110,7 +110,13 @@ hand_list<- c("https://medium.com/s/cointalk/coin-talk-2-korean-crypto-mania-and
               "https://medium.com/s/cointalk/cointalk-65-slanted-and-enchanted-72a36c1d82b",
               "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-66-hxro-is-a-crypto-game-that-is-definitely-not-gambling-47595a6c84d5",
               "https://medium.com/s/cointalk/episode-67-would-oprah-move-the-needle-5b20d9a7910d",
-              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-68-%EF%B8%8F-hacking-team-wants-to-connect-on-linked-in-90220f283a57"
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-68-%EF%B8%8F-hacking-team-wants-to-connect-on-linked-in-90220f283a57",
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-69-the-corruption-episode-f4498a2085c",
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-70-marktoshi-zuckermoto-22e913acdbe6",
+              "https://medium.com/s/cointalk/episode-71-%EF%B8%8F-broke-ass-no-volume-exchanges-64cdea0195ad",
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-72-fomo-kang-3-this-time-its-personal-50a90c3c13",
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-73-crypto-shaman-8949a25982e0",
+              "https://medium.com/s/cointalk/cointalk-%EF%B8%8F-74-when-trolls-get-rekt-31ba67f5476e"
               )
 
 ```
