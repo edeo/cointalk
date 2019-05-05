@@ -1,18 +1,23 @@
 ---
-title: "cointalk"
+title: "Cointalk text analysis with tidytext"
 author: "ed"
 date: "4/2/2019"
 output: html_document
 ---
 
 
-## Coin talk
+(updated 5/5/2019 with new episodes)
 
-Here is a analysis of sentiment in Cointalk.
+Here is a analysis of sentiment in [Cointalk](https://medium.com/s/cointalk), a podcast about the world of bitcoin and crypto currencies, "The official podcast of Bitcoin crashes Hosted by Aaron Lammer and Jay Caspian Kang." It's a great show - if you haven't listened to it I'd recommend that you check it out. 
 
-I took all the Cointalk episodes that have transcriptions and ran them through some sentiment analysis. 
 
-Looking at the transcripts, we can see who is more positive , who is more negative, and how that changes over time. 
+
+I took all the Cointalk episodes that have transcriptions and ran them through some sentiment analysis.  Looking at the transcripts, we can see who is more positive , who is more negative, and how that changes over time. 
+
+I figured that a podcast about bitcoin would have a lot of swings in sentiment over time so I thought it'd be a good text to analyze. Also, the transcripts are available for free, which makes it easy to scrape and analyze. I joined medium to support the podcast.
+
+
+I followed a lot of the instruction from [Text mining with R](https://www.tidytextmining.com/) by Juila Silge and David Robinson. If you want to see the R code in the markdown file, follow this [link here](https://github.com/edeo/cointalk/blob/master/index.Rmd) .
 
 
 ```{r , include=FALSE,message=FALSE}
@@ -39,7 +44,7 @@ second <- function(x){
 ```
 
 
-Here is a list of all the cointalk episode webpages that had transcriptions.
+In the R markdown document, in my github repo, befow is a list of all the cointalk episode webpages that had transcriptions.
 
 ```{r, include=FALSE,message=FALSE}
 
@@ -432,6 +437,13 @@ Looks like Aaron was less angry than Jay at the start of the podcast, but now ha
 
 Next steps :
 
-Tf/idf 
-LDA
-looking at ngram with 'pretty'
+Tf/idf  
+LDA  
+looking at ngram with 'pretty'  to see if it ends up more wiht "pretty good", "pretty bad", or something like "this new coin company is pretty sleazy"   
+
+```{r}
+
+tidy_conversation_main %>% filter(word=='pretty') %>% group_by(name) %>% tally()
+
+
+```
