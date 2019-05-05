@@ -246,17 +246,22 @@ head(tidy_conversation_main)
 I join three sentiment tables to that table, one from Bing, one from Afinn, and one from NRC.  
 
 
-We can see the total number of none stop words Aaron and Jay have used:
+We can see the total number of non-stop words Aaron and Jay have used:
 
-```{r,message=FALSE}
-
-
+```{r,include=FALSE,message=FALSE}
 tidy_conversation_main <- tidy_conversation_main %>% 
   mutate(name = ifelse(name=="Aaron Lammer","Aaron",
                 ifelse(name== "Jay Kang","Jay",name)))
 
 tidy_conversation_main <- tidy_conversation_main %>% 
   filter(name=="Aaron"|name=="Jay")
+
+```
+
+```{r,message=FALSE}
+
+
+
 
 tidy_conversation_main %>% group_by(name) %>% tally()
 
@@ -345,7 +350,7 @@ summary_of_episode <- summary_of_episode_bing %>%
 The first graph shows the over Bing sentiment score showing the percentage positive words as a total of non-stop words over time.
 
 
-Please note that I had to take the word 'grin' out of the analysis, since it is refering to a (maybe shit?) coin, and not to them grinning all the time. 
+Please note that I had to take the word 'grin' out of the analysis, since it is refering to a  coin, and not to them grinning all the time. 
 
 ```{r, echo=FALSE,message=FALSE}
 
@@ -361,7 +366,7 @@ It looks like Aaron starts out more positive than Jay, but over time the two see
 
 afinn_sentiment_score 
 
-Using the Afinn table, there is a different trend, showing Jay take a more positive  
+Using the Afinn table, there is a different trend, showing Jay trend upwards over time, overtaking Aaron interms of percentage of workds that are positive. 
 
 ```{r, echo=FALSE,message=FALSE}
 
@@ -413,10 +418,7 @@ ggplot(joy_graph_df,aes(episode_number,n,color=name)) +
 Although there are more words about fear, there are also more words about joy from Aaron.
 
 
- unique(convo_w_bing$nrc_sentiment)
- [1] "anger"        "disgust"      "fear"         "negative"     "sadness"     
- [6] "anticipation" "joy"          "positive"     "trust"        "surprise" 
- 
+
  
  Anger  
  
@@ -439,7 +441,8 @@ Next steps :
 
 Tf/idf  
 LDA  
-looking at ngram with 'pretty'  to see if it ends up more wiht "pretty good", "pretty bad", or something like "this new coin company is pretty sleazy"   
+Adding more documents - Breakermag, chain letter from MIT  
+Ngram : looking at ngram with 'pretty'  to see if it ends up more with "pretty good", "pretty bad", or something like "this new coin company is pretty sleazy". This might throw things off since in the bing sentiment table it is coded as positive.  
 
 ```{r}
 
