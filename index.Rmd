@@ -1,7 +1,7 @@
 ---
 title: "cointalk"
 author: "ed"
-date: "4/1/2019"
+date: "4/2/2019"
 output: html_document
 ---
 
@@ -10,9 +10,12 @@ output: html_document
 
 Here is a analysis of sentiment in Cointalk.
 
+I took all the Cointalk episodes that have transcriptions and ran them through some sentiment analysis. 
+
+Looking at the transcripts, we can see who is more positive , who is more negative, and how that changes over time. 
 
 
-```{r , results='hide',message=FALSE}
+```{r , include=FALSE,message=FALSE}
 
 library(rvest)
 library(here)
@@ -38,7 +41,7 @@ second <- function(x){
 
 Here is a list of all the cointalk episode webpages that had transcriptions.
 
-```{r, results='hide',message=FALSE}
+```{r, include=FALSE,message=FALSE}
 
 
 # "https://medium.com/s/cointalk/coin-talk-25-fear-and-loathing-at-a-cryptokitty-auction-33abbcd65b57"
@@ -113,7 +116,7 @@ hand_list<- c("https://medium.com/s/cointalk/coin-talk-2-korean-crypto-mania-and
 ```
 
 
-```{r, results='hide',message=FALSE}
+```{r,include=FALSE,message=FALSE}
 
 # reading in the first webpage
 
@@ -168,7 +171,7 @@ tidy_conversation_main <- tidy_conversation
 ```
 
 
-```{r, results='hide',message=FALSE}
+```{r, include=FALSE,message=FALSE}
 
 # creating a number list for each link in the list of podcast links.
 
@@ -192,6 +195,7 @@ for(number in hand_listnum){
            |str_detect(value,"Jay:")==TRUE |str_detect(value,"Aaron:")==TRUE) 
   
   episode <- testtesttest %>% html_nodes('h1') %>% html_text()
+  print(episode)
   
   text <- testtibble$value
   
@@ -216,32 +220,59 @@ for(number in hand_listnum){
 
 ```
 
-Now we have a table with  "name","linenumber","episode","word" 
+Now we have a table with  "name","linenumber","episode","word".  
 
-```{r}
+```{r,include=FALSE}
 head(tidy_conversation_main)
 
 ```
 
-```{r,results='hide',message=FALSE}
+I join three sentiment tables to that table, one from Bing, one from Afinn, and one from NRC.  
+
+
+```{r,include=FALSE,message=FALSE}
 
 # bringing in all of the bing sentiment words
-bing <- get_sentiments('bing')
+bing  <- get_sentiments('bing')
+afinn <- get_sentiments('afinn')
+nrc   <- get_sentiments('nrc')
 
 # joining the sentiment word table to the coin talk table
+
+
+# taking out the word 'grin' since it referes to a coin and not the actually grining, which is positive
+
+tidy_conversation_main <- tidy_conversation_main %>% filter(word != 'grin')
+
+
+
 
 convo_w_bing <- tidy_conversation_main %>%
   # With inner join, implement sentiment analysis using `bing`
   inner_join(bing)
 
-# taking out the word 'grin' since it referes to a coin and not the actually grining, which is positive
+convo_w_bing <- convo_w_bing  %>%
+  # With inner join, implement sentiment analysis using `bing`
+  inner_join(afinn)
 
-convo_w_bing <- convo_w_bing %>% filter(word != 'grin')
 
+convo_w_bing <- convo_w_bing  %>%
+  # With inner join, implement sentiment analysis using `bing`
+  inner_join(afinn)
+
+
+
+
+
+colnames(nrc)[2] <- 'nrc_sentiment'
+
+convo_w_bing <- convo_w_bing  %>%
+  # With inner join, implement sentiment analysis using `bing`
+  inner_join(nrc)
 
 # coding negative as a zero and positive sentiment as a one.
 
-convo_w_bing <- convo_w_bing %>% mutate(score = ifelse(sentiment == 'negative',0,1))
+convo_w_bing <- convo_w_bing %>% mutate(bing_score = ifelse(sentiment == 'negative',0,1))
 
 
 # a couple of the episodes either just said the speakers first name instead of their full name. 
@@ -256,10 +287,11 @@ mutate(episode_number = ifelse(is.na(str_extract(episode,'[:digit:]{2}')),str_ex
 
                         
 summary_of_episode <- left_join(convo_w_bing %>%  group_by(name,episode) %>%
-                                  summarize(total=sum(score)),convo_w_bing %>%
+                                  summarize(bing_total=sum(bing_score),afinn_total = sum(score)),convo_w_bing %>%
                                   group_by(name,episode) %>% 
                                   tally()) %>%
-                                  mutate(sent_score = total/n)
+                                  mutate(bing_sentiment_score = bing_total/n, 
+                                         afinn_sentiment_score = afinn_total/n)
 
 
 summary_of_episode <- summary_of_episode %>% 
@@ -272,16 +304,95 @@ summary_of_episode$episode_number <- as.numeric(summary_of_episode$episode_numbe
 
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+The first graph shows the over Bing sentiment score showing the percentage positive words as a total of non-stop words over time.
 
-```{r pressure, echo=FALSE}
 
-ggplot(summary_of_episode,aes(episode_number,sent_score,color=name)) +
+Please note that I had to take the word 'grin' out of the analysis, since it is refering to a (maybe shit?) coin, and not to them grinning all the time. 
+
+```{r, echo=FALSE,message=FALSE}
+
+ggplot(summary_of_episode,aes(episode_number,bing_sentiment_score,color=name)) +
   geom_point() +
   geom_smooth(method='lm')
 
 ```
 
+It looks like Aaron starts out more positive than Jay, but over time the two seem to start to converage. 
+
+
+
+afinn_sentiment_score 
+
+Using the Afinn table, the look like they start out even more far apart, but show the same general trend of move towards the same amount of negativity on crypto currency.  
+
+```{r, echo=FALSE,message=FALSE}
+
+ggplot(summary_of_episode,aes(episode_number,afinn_sentiment_score,color=name)) +
+  geom_point() +
+  geom_smooth(method='lm')
+
+```
+
+
+
+
+Fear  
+
+There's a lot to be afraid of in the crypto world. This graph uses the NRC sentiment table to show the percentage of fear words over time. 
+
+
+```{r, echo=FALSE,message=FALSE}
+
+ fear_graph_df <- convo_w_bing %>% filter(nrc_sentiment=='fear') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+
+ggplot(fear_graph_df,aes(episode_number,n,color=name)) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+```
+
+
+Looks like Aaron has caught up to Jay.  
+
+
+Joy  
+
+
+
+```{r, echo=FALSE,message=FALSE}
+
+joy_graph_df <- convo_w_bing %>% 
+  filter(nrc_sentiment=='joy') %>% 
+  group_by(name,episode_number,nrc_sentiment) %>% 
+  tally()
+
+ggplot(joy_graph_df,aes(episode_number,n,color=name)) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+```
+
+Although there are more words about fear, there are also more words about joy from Aaron.
+
+
+ unique(convo_w_bing$nrc_sentiment)
+ [1] "anger"        "disgust"      "fear"         "negative"     "sadness"     
+ [6] "anticipation" "joy"          "positive"     "trust"        "surprise" 
+ 
+ 
+ Anger  
+ 
+```{r, echo=FALSE,message=FALSE}
+
+anger_graph_df <- convo_w_bing %>% filter(nrc_sentiment=='anger') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+
+ggplot(anger_graph_df,aes(episode_number,n,color=name)) +
+  geom_point()+
+  geom_smooth(method='lm')
+
+```
+
+
+Looks like Aaron was less angry than Jay at the start of the podcast, but now has passed him, maybe those are the bags talking.
 
