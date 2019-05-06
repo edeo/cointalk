@@ -6,8 +6,8 @@ output: html_document
 ---
 
 
-(updated 5/5/2019 with new episodes)
-(updated 5/6/2019 to fix some mistakes)
+(updated 5/5/2019 with new episodes)  
+(updated 5/6/2019 to fix some mistakes)  
 
 Here is a analysis of sentiment in [Cointalk](https://medium.com/s/cointalk), a podcast about the world of bitcoin and crypto currencies, "The official podcast of Bitcoin crashes Hosted by Aaron Lammer and Jay Caspian Kang." It's a great show - if you haven't listened to it I'd recommend that you check it out. 
 
@@ -188,8 +188,7 @@ tidy_conversation_main <- tidy_conversation
 ```
 
 
-1 Aaron 17328
-2 Jay   12725
+
 
 ```{r, include=FALSE,message=FALSE}
 
@@ -372,7 +371,7 @@ It looks like Aaron starts out more positive than Jay, but over time the two see
 
 afinn_sentiment_score 
 
-Using the Afinn table, there is a different trend, showing Jay trend upwards over time, overtaking Aaron interms of percentage of workds that are positive. 
+Using the Afinn table, there is a different trend, showing Jay trend upwards over time, overtaking Aaron interms of percentage of words that are positive. 
 
 ```{r, echo=FALSE,message=FALSE}
 
@@ -390,7 +389,7 @@ Fear
 There's a lot to be afraid of in the crypto world. This graph uses the NRC sentiment table to show the percentage of fear words over time. 
 
 
-```{r, echo=FALSE,message=FALSE}
+```{r,echo=FALSE,message=FALSE}
 
 ncr_word_list<- unique(nrc$word)
 
@@ -412,7 +411,7 @@ colnames(denominator_table_ncr)[3] <-'denominator'
 
 
 
-```{r}
+```{r,echo=FALSE,message=FALSE}
 
 
 
@@ -431,7 +430,7 @@ ggplot(fear_graph_df,aes(episode_number,fear_score,color=name)) +
 ```
 
 
-Looks like Aaron has caught up to Jay.  
+Looks like Aaron has catching up to Jay.  
 
 
 Joy  
