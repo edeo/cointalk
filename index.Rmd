@@ -19,6 +19,8 @@ I figured that a podcast about bitcoin would have a lot of swings in sentiment o
 
 I followed a lot of the instruction from [Text mining with R](https://www.tidytextmining.com/) by Juila Silge and David Robinson. If you want to see the R code in the markdown file, follow this [link here](https://github.com/edeo/cointalk/blob/master/index.Rmd) .
 
+For more information on the sentiments datasets, click [here](https://www.tidytextmining.com/sentiment.html#the-sentiments-dataset) .
+
 
 ```{r , include=FALSE,message=FALSE}
 
@@ -386,9 +388,17 @@ There's a lot to be afraid of in the crypto world. This graph uses the NRC senti
 
 ```{r, echo=FALSE,message=FALSE}
 
- fear_graph_df <- convo_w_ncr %>% filter(nrc_sentiment=='fear') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+unique_ncr <- convo_w_ncr %>% select(name,word,episode_number) %>% unique(.)
 
-ggplot(fear_graph_df,aes(episode_number,n,color=name)) +
+denominator_table_ncr <- unique_ncr %>% group_by(name,episode_number)  %>% tally()
+
+
+ fear_graph_df_numerator <- convo_w_ncr %>% filter(nrc_sentiment=='fear') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+
+fear_graph_df <- left_join(fear_graph_df_numerator,denominator_table_ncr)
+
+
+ggplot(fear_graph_df,aes(episode_number,fear_score,color=name)) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -404,12 +414,16 @@ Joy
 
 ```{r, echo=FALSE,message=FALSE}
 
-joy_graph_df <- convo_w_ncr %>% 
+joy_graph_df_numerator  <- convo_w_ncr %>% 
   filter(nrc_sentiment=='joy') %>% 
   group_by(name,episode_number,nrc_sentiment) %>% 
   tally()
 
-ggplot(joy_graph_df,aes(episode_number,n,color=name)) +
+joy_graph_df <- left_join(joy_graph_df_numerator,denominator_table_ncr)
+
+joy_graph_df <-joy_graph_df %>% mutate(joy_score = n/denominator)
+
+ggplot(joy_graph_df,aes(episode_number,joy_score,color=name)) +
   geom_point()+
   geom_smooth(method='lm')
 
@@ -424,23 +438,28 @@ Although there are more words about fear, there are also more words about joy fr
  
 ```{r, echo=FALSE,message=FALSE}
 
-anger_graph_df <- convo_w_ncr %>% filter(nrc_sentiment=='anger') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+anger_graph_df_numerator <- convo_w_ncr %>% filter(nrc_sentiment=='anger') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
 
-ggplot(anger_graph_df,aes(episode_number,n,color=name)) +
+anger_graph_df <- left_join(anger_graph_df_numerator,denominator_table_ncr)
+
+anger_graph_df <-anger_graph_df %>% mutate(anger_score = n/denominator)
+
+
+ggplot(anger_graph_df,aes(episode_number,anger_score,color=name)) +
   geom_point()+
   geom_smooth(method='lm')
 
 ```
 
 
-Looks like Aaron was less angry than Jay at the start of the podcast, but now has passed him, maybe those are the bags talking.
+Jay's angry, but Aaron's catching up. 
 
 
 
 Next steps :
 
 Tf/idf  
-LDA  
+LDA   
 Adding more documents - Breakermag, chain letter from MIT  
 Ngram : looking at ngram with 'pretty'  to see if it ends up more with "pretty good", "pretty bad", or something like "this new coin company is pretty sleazy". This might throw things off since in the bing sentiment table it is coded as positive.  
 
