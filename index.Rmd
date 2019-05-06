@@ -7,6 +7,7 @@ output: html_document
 
 
 (updated 5/5/2019 with new episodes)
+(updated 5/6/2019 to fix some mistakes)
 
 Here is a analysis of sentiment in [Cointalk](https://medium.com/s/cointalk), a podcast about the world of bitcoin and crypto currencies, "The official podcast of Bitcoin crashes Hosted by Aaron Lammer and Jay Caspian Kang." It's a great show - if you haven't listened to it I'd recommend that you check it out. 
 
@@ -186,6 +187,9 @@ tidy_conversation_main <- tidy_conversation
 
 ```
 
+
+1 Aaron 17328
+2 Jay   12725
 
 ```{r, include=FALSE,message=FALSE}
 
@@ -388,15 +392,37 @@ There's a lot to be afraid of in the crypto world. This graph uses the NRC senti
 
 ```{r, echo=FALSE,message=FALSE}
 
-unique_ncr <- convo_w_ncr %>% select(name,word,episode_number) %>% unique(.)
-
-denominator_table_ncr <- unique_ncr %>% group_by(name,episode_number)  %>% tally()
+ncr_word_list<- unique(nrc$word)
 
 
- fear_graph_df_numerator <- convo_w_ncr %>% filter(nrc_sentiment=='fear') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+# the denominator is all the words that they have said that are coded by ncr
+
+
+denominator_table_ncr <-tidy_conversation_main %>% 
+  filter(word %in% ncr_word_list) %>% 
+  group_by(name,episode_number) %>% 
+  tally()
+
+colnames(denominator_table_ncr)[3] <-'denominator'
+```
+
+
+
+
+
+
+
+```{r}
+
+
+
+fear_graph_df_numerator <- convo_w_ncr %>% 
+  filter(nrc_sentiment=='fear') %>% 
+  group_by(name,episode_number) %>% tally()
 
 fear_graph_df <- left_join(fear_graph_df_numerator,denominator_table_ncr)
 
+fear_graph_df <-fear_graph_df %>% mutate(fear_score = n/denominator)
 
 ggplot(fear_graph_df,aes(episode_number,fear_score,color=name)) +
   geom_point()+
@@ -429,7 +455,7 @@ ggplot(joy_graph_df,aes(episode_number,joy_score,color=name)) +
 
 ```
 
-Although there are more words about fear, there are also more words about joy from Aaron.
+Looks like they converge on joy. 
 
 
 
@@ -438,7 +464,10 @@ Although there are more words about fear, there are also more words about joy fr
  
 ```{r, echo=FALSE,message=FALSE}
 
-anger_graph_df_numerator <- convo_w_ncr %>% filter(nrc_sentiment=='anger') %>% group_by(name,episode_number,nrc_sentiment) %>% tally()
+anger_graph_df_numerator <- convo_w_ncr %>% 
+  filter(nrc_sentiment=='anger') %>% 
+  group_by(name,episode_number,nrc_sentiment) %>% 
+  tally()
 
 anger_graph_df <- left_join(anger_graph_df_numerator,denominator_table_ncr)
 
